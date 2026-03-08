@@ -29,6 +29,10 @@
     #viewDiv {
       flex: 1 1 auto;
     }
+    .esri-popup__main-container {
+      max-width: 600px !important;
+      width: 600px !important;
+    }
   </style>
 </head>
 <body>
@@ -142,7 +146,7 @@ function (Map, MapView, FeatureLayer, Graphic, Polyline, SpatialReference) {
       if (slices[i].height > maxHeight) maxHeight = slices[i].height;
     }
 
-    var W = 480, minH = 48, maxH = 84;
+    var W = 480, minH = 48;
     var html = '<div style="font-family:Arial,sans-serif;font-size:11px;padding:0 2px 4px;">';
     html += '<div style="font-weight:bold;font-size:13px;margin-bottom:6px;">ROW Cross-Section &mdash; ' + Math.round(totalWidth * 10) / 10 + ' m total</div>';
     html += '<div style="white-space:nowrap;display:inline-block;border:1px solid #bbb;">';
@@ -150,15 +154,13 @@ function (Map, MapView, FeatureLayer, Graphic, Polyline, SpatialReference) {
     for (var i = 0; i < slices.length; i++) {
       var sl = slices[i];
       var wpx = Math.max(1, Math.round((sl.width / totalWidth) * W));
-      var hpx = (maxHeight > 0 && sl.height > 0)
-        ? Math.round(minH + (sl.height / maxHeight) * (maxH - minH))
-        : minH;
+      var hpx = (sl.height > 0) ? minH + 5 : minH;
       var bg = COLOR_MAP[sl.type] || "#78909C";
       if (sl.type === "sidewalk" && sl.meta !== null && sl.meta !== undefined && sl.meta !== "") {
         bg = "#8BC34A";
       }
       var fg  = LIGHT_BG[sl.type] ? "#333" : "#fff";
-      var arrow = sl.direction === "forward" ? "\u25BA" : sl.direction === "reverse" ? "\u25C4" : "\u2194";
+      var arrow = sl.direction === "forward" ? "\u2191" : sl.direction === "reverse" ? "\u2193" : "\u2195";
 
       html += '<div style="display:inline-block;vertical-align:bottom;width:' + wpx + 'px;height:' + hpx + 'px;'
             + 'background:' + bg + ';color:' + fg + ';text-align:center;font-size:9px;'
@@ -237,7 +239,8 @@ function (Map, MapView, FeatureLayer, Graphic, Polyline, SpatialReference) {
     zoom: 15,
     popup: {
       dockEnabled: true,
-      dockOptions: { position: "bottom-right", breakpoint: false }
+      dockOptions: { position: "bottom-right", breakpoint: false },
+      maxWidth: 600
     }
   });
 });
