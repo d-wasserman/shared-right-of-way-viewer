@@ -3,8 +3,7 @@
 A lightweight web application that visualises street right-of-way (ROW) cross-section data using the [shared-row specification](https://github.com/d-wasserman/shared-row) and the ArcGIS Maps SDK for JavaScript (v4.29).
 
 ---
-
-[![Demo](assets/Shared Right of Way Viewer.gif)](assets/Shared Right of Way Viewer.gif)
+![Demo](assets/Shared_Right_of_Way_Viewer.gif)
 
 ---
 
