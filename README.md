@@ -4,7 +4,7 @@ A lightweight web application that visualises street right-of-way (ROW) cross-se
 
 ---
 
-[![Demo](assets/Shared Right of Way Viewer.gif)](assets/Shared Right of Way Viewer.gif)
+![Demo](assets/Shared Right of Way Viewer.gif)
 
 ---
 
