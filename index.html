@@ -121,21 +121,43 @@ function (Map, MapView, FeatureLayer, Graphic, Polyline, SpatialReference) {
   // expression below (for ArcGIS Online use).
   // ------------------------------------------------------------------
   var COLOR_MAP = {
-    "sidewalk":     "#9E9E9E",
-    "drive_lane":   "#546E7A",
-    "bike_lane":    "#43A047",
-    "buffer":       "#F9A825",
-    "median":       "#2E7D32",
-    "turn_lane":    "#EF6C00",
-    "auto_parking": "#1565C0",
-    "parking":      "#1565C0",
-    "transit_lane": "#6A1B9A",
-    "curb":         "#4E342E",
-    "crosswalk":    "#0288D1",
-    "swale":        "#81C784",
-    "planting":     "#388E3C"
+    // Automotive (Dedicated)
+    "drive_lane":           "#546E7A",
+    "turn_lane":            "#EF6C00",
+    // Non-Automotive (Dedicated)
+    "sidewalk":             "#9E9E9E",
+    "bike_lane":            "#43A047",
+    "bus_lane":             "#C62828",
+    "transit":              "#6A1B9A",
+    "path":                 "#00838F",
+    // Mixed
+    "limitless":            "#FF6F00",
+    // Curb Zone
+    "flex_zone":            "#90A4AE",
+    "parking":              "#1565C0",
+    "parklet":              "#F06292",
+    "commercial_loading":   "#FF8F00",
+    "passenger_loading":    "#FFB300",
+    "transit_stop":         "#7B1FA2",
+    "commercial_activity":  "#E64A19",
+    "bike_parking":         "#558B2F",
+    "bike_share":           "#2E7D32",
+    "dockless_parking":     "#00695C",
+    "construction_zone":    "#F9A825",
+    "tow_away_zone":        "#B71C1C",
+    // Miscellaneous
+    "median":               "#2E7D32",
+    "buffer":               "#F9A825",
+    "temporary":            "#FF6D00",
+    "transit_shelter":      "#4527A0",
+    "planting_strip":       "#388E3C",
+    "filter_strip":         "#81C784",
+    "canal":                "#0277BD"
   };
-  var LIGHT_BG = { "buffer": true, "swale": true, "planting": true };
+  var LIGHT_BG = {
+    "buffer": true, "filter_strip": true, "planting_strip": true,
+    "construction_zone": true, "commercial_loading": true, "passenger_loading": true
+  };
 
   function buildCrossSectionHTML(slices) {
     if (!slices || slices.length === 0) return "<em>No slice data.</em>";
