@@ -103,11 +103,12 @@ for (var i in slices) {
   var pct   = (w / totalWidth) * 100;
   var bg    = IIF(HasKey(COLORS, sType), COLORS[sType], "#78909C");
   var fg    = IIF(HasKey(LIGHT_BG, sType), "#333", "#fff");
+  var hpx   = IIF(s["height"] > 0, 53, 48);
   var wLabel = Text(Round(w, 1)) + "m";
 
   bars += "<div style='" +
     "display:inline-block;vertical-align:bottom;" +
-    "width:" + pct + "%;height:48px;" +
+    "width:" + pct + "%;height:" + hpx + "px;" +
     "background:" + bg + ";color:" + fg + ";" +
     "text-align:center;font-size:9px;overflow:hidden;" +
     "box-sizing:border-box;padding:4px 1px 2px;" +
