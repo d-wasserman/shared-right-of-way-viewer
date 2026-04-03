@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Shared ROW Viewer — Arcade Popup</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.29/"></script>
+  <style>
+    html, body {
+      padding: 0; margin: 0;
+      height: 100%; width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #topbar {
+      flex: 0 0 42px;
+      background: #2d3a45;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-family: Arial, sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    #viewDiv {
+      flex: 1 1 auto;
+    }
+    .esri-popup__main-container {
+      max-width: 600px !important;
+      width: 600px !important;
+    }
+  </style>
+</head>
+<body>
+<div id="topbar">Shared ROW Viewer — Arcade Popup</div>
+<div id="viewDiv"></div>
+<script>
+// =============================================================================
+// Arcade expression — all popup rendering logic lives here, no JS required
+// beyond map setup. The same expression text can be pasted directly into an
+// ArcGIS Online popup "Arcade" block.
+// =============================================================================
+var ARCADE_EXPRESSION = `
+var slicesRaw = $feature["slices"];
+if (IsEmpty(slicesRaw)) { return "<em>No slice data.</em>"; }
+
+var slices = FromJSON(slicesRaw);
+if (TypeOf(slices) != "Array" || Count(slices) == 0) {
+  return "<em>No slice data.</em>";
+}
+
+var COLORS = {
+  "drive_lane":          "#546E7A",
+  "turn_lane":           "#EF6C00",
+  "sidewalk":            "#9E9E9E",
+  "bike_lane":           "#43A047",
+  "bus_lane":            "#C62828",
+  "transit":             "#6A1B9A",
+  "path":                "#00838F",
+  "limitless":           "#FF6F00",
+  "flex_zone":           "#90A4AE",
+  "parking":             "#1565C0",
+  "parklet":             "#F06292",
+  "commercial_loading":  "#FF8F00",
+  "passenger_loading":   "#FFB300",
+  "transit_stop":        "#7B1FA2",
+  "commercial_activity": "#E64A19",
+  "bike_parking":        "#558B2F",
+  "bike_share":          "#2E7D32",
+  "dockless_parking":    "#00695C",
+  "construction_zone":   "#F9A825",
+  "tow_away_zone":       "#B71C1C",
+  "median":              "#2E7D32",
+  "buffer":              "#F9A825",
+  "temporary":           "#FF6D00",
+  "transit_shelter":     "#4527A0",
+  "planting_strip":      "#388E3C",
+  "filter_strip":        "#81C784",
+  "canal":               "#0277BD"
+};
+
+var LIGHT_BG = {
+  "buffer": true, "filter_strip": true, "planting_strip": true,
+  "construction_zone": true, "commercial_loading": true,
+  "passenger_loading": true
+};
+
+var totalWidth = 0;
+for (var i in slices) {
+  totalWidth += slices[i]["width"];
+}
+if (totalWidth == 0) { return "<em>Total width is zero.</em>"; }
+
+var bars = "";
+for (var i in slices) {
+  var s     = slices[i];
+  var sType = s["type"];
+  var w     = s["width"];
+  var pct   = (w / totalWidth) * 100;
+  var bg    = IIF(HasKey(COLORS, sType), COLORS[sType], "#78909C");
+  var fg    = IIF(HasKey(LIGHT_BG, sType), "#333", "#fff");
+  var wLabel = Text(Round(w, 1)) + "m";
+
+  bars += "<div style='" +
+    "display:inline-block;vertical-align:bottom;" +
+    "width:" + pct + "%;height:48px;" +
+    "background:" + bg + ";color:" + fg + ";" +
+    "text-align:center;font-size:9px;overflow:hidden;" +
+    "box-sizing:border-box;padding:4px 1px 2px;" +
+    "border-right:1px solid rgba(255,255,255,0.4);'>" +
+    "<div style='word-break:break-all;line-height:1.15;'>" + sType + "</div>" +
+    "<div style='font-weight:bold;margin-top:2px;'>" + wLabel + "</div>" +
+    "</div>";
+}
+
+var legend = "";
+for (var i in slices) {
+  var s2     = slices[i];
+  var sType2 = s2["type"];
+  var bg2    = IIF(HasKey(COLORS, sType2), COLORS[sType2], "#78909C");
+  var wLabel2 = Text(Round(s2["width"], 1)) + " m";
+
+  legend += "<span style='display:inline-block;white-space:nowrap;margin-right:12px;'>" +
+    "<span style='display:inline-block;width:11px;height:11px;background:" + bg2 +
+    ";vertical-align:middle;border:1px solid rgba(0,0,0,0.25);margin-right:3px;'></span>" +
+    sType2 + " \u2014 " + wLabel2 +
+    "</span>";
+}
+
+var totalLabel = Text(Round(totalWidth, 1));
+
+return "<div style='font-family:Arial,sans-serif;font-size:11px;padding:0 2px 4px;'>" +
+  "<div style='font-weight:bold;font-size:13px;margin-bottom:6px;'>ROW Cross-Section \u2014 " + totalLabel + " m total</div>" +
+  "<div style='white-space:nowrap;display:inline-block;border:1px solid #bbb;width:100%;'>" +
+  bars +
+  "</div>" +
+  "<div style='margin-top:9px;line-height:1.9;'>" + legend + "</div>" +
+  "</div>";
+`;
+
+// =============================================================================
+// ArcGIS Maps SDK — map and layer setup (no popup rendering logic here)
+// =============================================================================
+require([
+  "esri/Map",
+  "esri/views/MapView",
+  "esri/layers/FeatureLayer",
+  "esri/Graphic",
+  "esri/geometry/Polyline",
+  "esri/geometry/SpatialReference"
+], function (Map, MapView, FeatureLayer, Graphic, Polyline, SpatialReference) {
+
+  var popupTemplate = {
+    title: "Segment: {sharedstreetid}",
+    expressionInfos: [{ name: "cross-section", expression: ARCADE_EXPRESSION }],
+    content: "{expression/cross-section}",
+    outFields: ["*"]
+  };
+
+  fetch("data/slice_spec_sample.geojson")
+    .then(function (r) { return r.json(); })
+    .then(function (geojson) {
+
+      var sr = new SpatialReference({ wkid: 4326 });
+
+      var graphics = geojson.features.map(function (f, idx) {
+        return new Graphic({
+          geometry: new Polyline({
+            paths: [f.geometry.coordinates],
+            spatialReference: sr
+          }),
+          attributes: {
+            ObjectID: idx + 1,
+            sharedstreetid: f.properties.sharedstreetid,
+            slices: f.properties.slices
+          }
+        });
+      });
+
+      var layer = new FeatureLayer({
+        source: graphics,
+        objectIdField: "ObjectID",
+        geometryType: "polyline",
+        spatialReference: sr,
+        outFields: ["*"],
+        fields: [
+          { name: "ObjectID",       type: "oid"    },
+          { name: "sharedstreetid", type: "string", length: 64    },
+          { name: "slices",         type: "string", length: 10000 }
+        ],
+        renderer: {
+          type: "simple",
+          symbol: { type: "simple-line", color: [84, 110, 122, 255], width: 3 }
+        },
+        popupTemplate: popupTemplate
+      });
+
+      var map = new Map({ basemap: "gray-vector", layers: [layer] });
+
+      new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-122.426, 37.798],
+        zoom: 15,
+        popup: {
+          dockEnabled: true,
+          dockOptions: { position: "bottom-right", breakpoint: false },
+          maxWidth: 600
+        }
+      });
+    });
+});
+</script>
+</body>
+</html>
