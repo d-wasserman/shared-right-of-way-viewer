@@ -13,12 +13,20 @@ Urban street rights-of-way contain many distinct slice types — sidewalks, driv
 
 This viewer renders each segment's cross-section as a proportional-width diagram directly inside the ArcGIS map popup, making it easy to explore and audit ROW allocations at a glance.
 
+## Examples
+
+The repo includes two self-contained examples — both can be opened directly in the browser (no server required):
+
+| File | Popup rendering | Notes |
+|---|---|---|
+| `index.html` | **JavaScript** — popup content built with a JS callback function | Supports direction arrows, elevation offsets, and metadata-based colour overrides |
+| `index-arcade.html` | **Pure Arcade** — popup content built entirely in an Arcade expression | Portable to ArcGIS Online / ArcGIS Pro popups; paste the expression from `arcade/popup-cross-section.arcade` |
+
 ## Features
 
 - Interactive map of street segments with click-to-inspect popups
 - Proportional-width cross-section diagram per segment
-- Color-coded slice types with direction indicators (↑ forward / ↓ reverse / ↕ bidirectional)
-- Elevated elements (e.g. sidewalk building fronts) rendered slightly taller than at-grade elements
+- Color-coded slice types with direction indicators (↑ forward / ↓ reverse / ↕ bidirectional) (JS version)
 - Legend listing each slice type and width in meters
 - Sample data covering segments in San Francisco, CA
 
