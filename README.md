@@ -57,7 +57,10 @@ Each GeoJSON feature carries a `slices` property (a JSON string) containing an a
 
 ```
 shared-right-of-way-viewer/
-├── index.html                  # Main application (ArcGIS JS API 4.29)
+├── index.html                      # JS popup example (ArcGIS JS API 4.29)
+├── index-arcade.html               # Pure Arcade popup example
+├── arcade/
+│   └── popup-cross-section.arcade  # Standalone Arcade expression (paste into AGOL/Pro)
 ├── data/
 │   └── slice_spec_sample.geojson   # Sample street segments (San Francisco)
 └── README.md
@@ -65,13 +68,7 @@ shared-right-of-way-viewer/
 
 ## Running Locally
 
-The app uses a `GeoJSONLayer` which requires an HTTP context (not `file://`):
-
-```bash
-python -m http.server 8080
-```
-
-Then open `http://localhost:8080` in your browser.
+Both examples inline the GeoJSON data, so they work by opening the HTML files directly — no server needed. Just open `index.html` or `index-arcade.html` in your browser.
 
 ## Technology
 
